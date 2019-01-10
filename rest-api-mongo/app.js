@@ -24,10 +24,12 @@ app.post('/add', (req, res) => {
   console.log("I have receive");
   console.log(json);
   decodeCayennePayload(payload_hex);
-  console.log(json.DevEUI_uplink.DevEUI);
-  console.log(json.DevEUI_uplink.payload_hex);
+  //addSenser(payload_hex)
+
+  //console.log(json.DevEUI_uplink.DevEUI);
+  //console.log(json.DevEUI_uplink.payload_hex);
   // getTesaTopGunPayloadValue(json.DevEUI_uplink.payload_hex);
-  timedate(time);
+
 
 
   //db.node.insert(req.body);
@@ -227,7 +229,7 @@ function timedate(timetext){
 
 
 //Get all user
-app.get('/showData', function (req, res) {
+app.get('/showDataSensor', function (req, res) {
 
   db.SensorData.find(function (err, docs) {
     console.log(docs);
@@ -235,9 +237,16 @@ app.get('/showData', function (req, res) {
 
   });
 })
+app.get('/showDataBeacon', function (req, res) {
 
+  db.BeaconData.find(function (err, docs) {
+    console.log(docs);
+    res.send(docs);
 
-app.get('/getValue',function(req,res){
+  });
+})
+
+app.get('/getTemp',function(req,res){
 
   db.SensorData.find(function (err, docs) {
 
@@ -254,22 +263,22 @@ app.get('/getValue',function(req,res){
 //
 // }
 
-app.get('/showbyID/:id',function(req,res){
-  var id1 = req.params.id;
-  fs.readFile(__dirname+"/"+"users.json",'utf8',function (err,data){
-    data = JSON.parse(data);
-    for(i in data){
-      if(data[i].id == id1 ){
-
-        break;
-      }
-    }
-    console.log(i);
-    console.log(data [i]);
-    // console.log(data);
-    res.end(JSON.stringify(data[i]));
-  });
-})
+// app.get('/showByDay/:id',function(req,res){
+//   var id1 = req.params.id;
+//   fs.readFile(__dirname+"/"+"users.json",'utf8',function (err,data){
+//     data = JSON.parse(data);
+//     for(i in data){
+//       if(data[i].id == id1 ){
+//
+//         break;
+//       }
+//     }
+//     console.log(i);
+//     console.log(data [i]);
+//     // console.log(data);
+//     res.end(JSON.stringify(data[i]));
+//   });
+// })
 
 
 
@@ -349,15 +358,37 @@ app.put('/user', function (req, res) {
 
 //Add user
 
-app.post('/addData', function (req, res) {
+// Date.now = function() {
+//    return new Date().getTime();
+//  }
+
+
+app.put('/addSenser', function (req, res) {
   var json = req.body;
-  db.SensorData.insert(json, function (err, docs) {
-    console.log(docs);
-    res.send(docs);
-  });
+  var d = Date(Date.now());
+  A=d.toString();
+  var mouth=A[4]+A[5]+A[6];
+  var dayf=A[8]+A[9];
+  var year=A[11]+A[12]+A[13]+A[14];
+  var timef=A[16]+A[17]+A[18]+A[19]+A[20]+A[21]+A[22]+A[23];
+//  Time=timef;
+//  Date=dayf+"/"+mouth+"/"+year;
+  if(mouth=="Jan"){var mouthf = "01"}
+  if(mouth=="Feb"){var mouthf = "02"}
+  if(mouth=="Mar"){var mouthf = "03"}
+  if(mouth=="Apr"){var mouthf = "04"}
+  if(mouth=="May"){var mouthf = "05"}
+  if(mouth=="Jun"){var mouthf = "06"}
+  if(mouth=="Jul"){var mouthf = "07"}
+  if(mouth=="Aug"){var mouthf = "08"}
+  if(mouth=="Sep"){var mouthf = "09"}
+  if(mouth=="Oct"){var mouthf = "10"}
+  if(mouth=="Nov"){var mouthf = "11"}
+  if(mouth=="Dec"){var mouthf = "12"}
+  json.datetime=dayf+"-"+mouthf+"-"+year+" "+timef;
+  db.SensorData.insert(json,function (err, docs) {console.log(docs); res.send(docs);});
 
-
-})
+}
 
 //Delete user by ID
 app.delete('/deleteData/:id', function (req, res) {
